@@ -19,7 +19,6 @@ from passlib.context import CryptContext
 import jwt
 from jose import JWTError
 import functools
-
 # Load environment variables
 load_dotenv()
 
