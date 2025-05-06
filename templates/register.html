@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="tr" style="background-color: #121212;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThinkOrbit AI - Kayıt</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: var(--background-light);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            font-size: 24px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .auth-btn:hover {
+            background-color: var(--accent-secondary);
+        }
+
+        .auth-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .auth-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 5px;
+        }
+
+        .password-requirements li {
+            margin-bottom: 3px;
+        }
+
+        .password-requirements li.valid {
+            color: #27ae60;
+        }
+
+        .password-requirements li i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>ThinkOrbit AI'ya Kayıt Olun</h1>
+            <p>Yeni bir hesap oluşturun</p>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+
+        <form id="register-form" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" id="username" name="username" required minlength="3">
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" required minlength="8" 
+                       onkeyup="checkPasswordStrength(this.value)">
+                <div class="password-requirements">
+                    <p>Şifre gereksinimleri:</p>
+                    <ul id="password-requirements-list">
+                        <li id="length"><i class="fas fa-circle"></i> En az 8 karakter</li>
+                        <li id="letter"><i class="fas fa-circle"></i> En az bir harf</li>
+                        <li id="number"><i class="fas fa-circle"></i> En az bir rakam</li>
+                        <li id="special"><i class="fas fa-circle"></i> En az bir özel karakter</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm-password">Şifre Tekrar</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                <i class="fas fa-user-plus"></i> Kayıt Ol
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <p>Zaten hesabınız var mı? <a href="/login">Giriş Yapın</a></p>
+        </div>
+    </div>
+
+    <script>
+        function checkPasswordStrength(password) {
+            const requirements = {
+                length: password.length >= 8,
+                letter: /[a-zA-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+
+            for (const [requirement, valid] of Object.entries(requirements)) {
+                const element = document.getElementById(requirement);
+                if (valid) {
+                    element.classList.add('valid');
+                    element.querySelector('i').className = 'fas fa-check';
+                } else {
+                    element.classList.remove('valid');
+                    element.querySelector('i').className = 'fas fa-circle';
+                }
+            }
+
+            return Object.values(requirements).every(Boolean);
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const errorMessage = document.getElementById('error-message');
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Şifre kontrolü
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Şifreler eşleşmiyor';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            if (!checkPasswordStrength(password)) {
+                errorMessage.textContent = 'Lütfen tüm şifre gereksinimlerini karşılayın';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `username=${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Kayıt başarılı, giriş sayfasına yönlendir
+                    window.location.href = '/login';
+                } else {
+                    errorMessage.textContent = data.message || 'Kayıt başarısız';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Bir hata oluştu. Lütfen tekrar deneyin.';
+                errorMessage.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html> 
